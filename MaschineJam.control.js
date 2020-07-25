@@ -77,7 +77,7 @@ var selectAndLaunch = true;
 var applicationControl = null;
 var transport = null;
 
-var gGlipOrientation = ORIENTATION.TrackBased;
+var gGlipOrientation = ORIENTATION.SceneBased;
 
 function init() {
 	var numTracks = 8;
