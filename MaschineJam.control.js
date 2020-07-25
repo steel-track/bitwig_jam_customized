@@ -52,6 +52,8 @@ load("PatternLengthView.js");
 
 load("TouchView.js");
 
+// Customizations
+var selectByDefault = true;
 
 /**
  *

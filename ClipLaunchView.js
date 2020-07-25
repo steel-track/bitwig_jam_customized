@@ -311,24 +311,30 @@ function ClipLaunchView(trackBank) {
 					}
 				}
 			} else {
-				if (trackStates[colt].armed) {
-					if (trackStates[colt].type === TrackTypes.Instrument) {
+				if (selectByDefault) {
+					track.selectInMixer();
+					slots.select(rowt);
+				}
+				else {
+					if (trackStates[colt].armed) {
+						if (trackStates[colt].type === TrackTypes.Instrument) {
+							slots.createEmptyClip(rowt, 4.0);
+							slots.launch(rowt);
+							if (selectAndLaunch) {
+								slots.select(rowt);
+							}
+							showInEditor(slots, rowt);
+						} else {
+							slots.record(rowt);
+							slots.launch(rowt);
+						}
+					} else {
 						slots.createEmptyClip(rowt, 4.0);
-						slots.launch(rowt);
 						if (selectAndLaunch) {
 							slots.select(rowt);
 						}
 						showInEditor(slots, rowt);
-					} else {
-						slots.record(rowt);
-						slots.launch(rowt);
 					}
-				} else {
-					slots.createEmptyClip(rowt, 4.0);
-					if (selectAndLaunch) {
-						slots.select(rowt);
-					}
-					showInEditor(slots, rowt);
 				}
 			}
 			//trackBank.getTrack(colt).getClipLauncherSlots().launch(rowt);
