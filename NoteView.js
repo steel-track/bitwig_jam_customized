@@ -12,8 +12,9 @@ function NoteView (noteInput) {
 
 	var scales = [];
 	scales.push({
-		notes : [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ],
-		name : "Chromatic"
+		notes : [ 0, 2, 4, 5, 7, 9, 11 ],
+		name : "Ionian/Major Isomorphic",
+		isomorphic : true
 	});
 	scales.push({
 		notes : [ 0, 2, 4, 5, 7, 9, 11 ],
@@ -30,6 +31,10 @@ function NoteView (noteInput) {
 	scales.push({
 		notes : [ 0, 3, 5, 7, 10 ],
 		name : "Pentatonic Minor"
+	});
+	scales.push({
+		notes : [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ],
+		name : "Chromatic"
 	});
 	scales.push({
 		notes : [ 0, 2, 3, 5, 7, 9, 10 ],
@@ -291,6 +296,7 @@ function NoteView (noteInput) {
 
 	function transpose(semitones) {
 		var tmpScale = scales[scaleIndex].notes;
+		var isomorphic = scales[scaleIndex].hasOwnProperty('isomorphic');
 
 		var newbase = baseNote + semitones;
 		if (newbase < 0 || newbase + 64 > 127) {
@@ -302,14 +308,23 @@ function NoteView (noteInput) {
 		noteToIndex = {}; 
 
 		for (i = 0; i < 64; i++) {
-			var octOffset = Math.floor((i + 4) / tmpScale.length);
-			var index = (i + 4) % tmpScale.length;
-			var notevalue = baseNote + tmpScale[index] + octOffset * 12;
-
 
 			var rowIndex = Math.floor(i / 8);
 			var colIndex = i % 8;
 			var noteIndex =  (7 - rowIndex) * 8 + colIndex;
+
+			if (isomorphic) {
+				var calculatedInterval = rowIndex * 3 + colIndex;
+				var octOffset = Math.floor(calculatedInterval / 7);
+				var index = calculatedInterval % 7;
+				var notevalue = baseNote + tmpScale[index] + octOffset * 12;
+				//var noteIndex =  i;
+			}
+			else {
+				var octOffset = Math.floor((i + 4) / tmpScale.length);
+				var index = (i + 4) % tmpScale.length;
+				var notevalue = baseNote + tmpScale[index] + octOffset * 12;
+			}
 
 
 			if (notevalue > 127) {
