@@ -15,7 +15,6 @@
 
 
 loadAPI(1);
-host.defineController("Native Instruments", "Maschine JAM", "0.6", "79721cfa-6daf-4e93-a05b-81afaa6e66d3");
 host.defineController("Native Instruments", "Maschine JAM Customized steeltrack", "0.6", "79721cfa-6daf-4e93-a05b-81afaa6e66d3");
 host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["Maschine Jam - 1"], ["Maschine Jam - 1"]);
