@@ -6,10 +6,11 @@
  * @param {TrackBankContainer} trackBankContainer
  * @param {boolean} hasSends
  */
-function MixerSliderControl(name, trackBankContainer, sendBank) {
+function MixerSliderControl(name, trackBankContainer, sendBank, currentTrack) {
     SliderControl.call(this);
     /** @type {TrackValue} */
     var trackValues = [];
+    var currentTrackValues = [];
     var sendIndex = 0;
     var sendExsits = [];
     /** @type {SliderView} */
@@ -37,7 +38,12 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
     };
     
     this.values = function() {
-        return trackValues;
+        if (mode === ControlModes.AUX) {
+            return currentTrackValues;
+        }
+        else {
+            return trackValues;
+        }
     };
 
     this.setMode = function(ctrlMode) {
@@ -54,11 +60,14 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
     };
     
     this.setSendLevel = function(index, value) {
-        trackBankContainer.getTrack(index).getSend(sendIndex).set(value,128);
+        //trackBankContainer.getTrack(index).getSend(sendIndex).set(value,128);
+        if (sendExsits[index]) {
+            currentTrack.getSend(index).set(value,128);
+        }
     };
     
     this.getSendValue = function(index) {
-        return trackValues[index].sends[sendIndex];
+        return currentTrackValues[index].send;
     };
     
     this.setVolume = function(index, value) {
@@ -82,7 +91,13 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
     };
     
     this.getColor = function(index) {
-        return trackValues[index].color;
+        if(display && mode === ControlModes.AUX) {
+            return currentTrackValues[index].color;
+        }
+        else {
+            return trackValues[index].color;
+        }
+        
     };
     
     this.incrementSendIndex = function() {
@@ -91,7 +106,7 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
             sendIndex = nextIndex;
             this.showSendIndex();
             if(display &&  mode === ControlModes.AUX) {
-                display.updateValues(this.getSendValue);
+                //display.updateValues(this.getSendValue);
             }
         }
     };
@@ -120,7 +135,7 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
             if(nextIndex !== sendIndex) {
                 sendIndex = nextIndex;
                 if(display &&  mode === ControlModes.AUX) {
-                    display.updateValues(getSendValue);  
+                    //display.updateValues(getSendValue);  
                 } 
             }
         });
@@ -140,9 +155,9 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
         var send = track.getSend(sndIndex);
         send.addValueObserver(128, function(value) { 
             trackValues[tindex].sends[sndIndex] = value;
-            if(display && mode === ControlModes.AUX && sendIndex === sndIndex) {
-                display.updateValue(value, tindex); 
-            }
+            // if(display && mode === ControlModes.AUX) {
+            //     display.updateValue(value, sndIndex); 
+            // }
         });
      }
     
@@ -160,14 +175,15 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
         
         track.exists().addValueObserver(function(exists) {
             trackValues[index].exists = exists;
-            if(display) {
+            if(display && mode === ControlModes.VOLUME) {
                display.setTrackModes(trackValues);                
             } 
         });
          
         track.addColorObserver(function( red, green, blue) {
+
             trackValues[index].color = toHex(convertColor(red,green,blue));
-            if(display) {
+            if(display && mode === ControlModes.VOLUME) {
                 display.setSliderColor(trackValues[index].color, index);
             }
          });
@@ -190,15 +206,44 @@ function MixerSliderControl(name, trackBankContainer, sendBank) {
             trackValues[index].pan = value;
             if(display && mode === ControlModes.PAN) {
                 display.updateValue(value, index); 
-            } 
+            }
         });
     }
+
+    function registerCurrentTrackSend(sndIndex) {
+        var send = currentTrack.getSend(sndIndex);
+        send.exists().addValueObserver(function(exists) {
+            currentTrackValues[sndIndex].exists = exists;
+            if (exists) {
+                currentTrackValues[sndIndex].color = '2c';
+            }
+            else {
+                currentTrackValues[sndIndex].color = '00';
+            }
+            if(display && mode === ControlModes.AUX) {
+               display.setTrackModes(trackValues);                
+            } 
+        });
+
+        send.addValueObserver(128, function(value) { 
+            currentTrackValues[sndIndex].send = value;
+            if(display && mode === ControlModes.AUX) {
+                display.updateValue(value, sndIndex); 
+            }
+        });
+     }
     
     (function() {
         for(var i=0;i<trackBankContainer.size;i++) {
             trackValues.push(new TrackValue());
             registerTrack(trackBankContainer.getTrack(i),i);
         }
-    })();
 
+        if(sendBank) {
+            for(var sndIndex=0;sndIndex<8;sndIndex++) {
+                currentTrackValues.push(new TrackValue());
+                registerCurrentTrackSend(sndIndex);
+            }
+        }
+    })();
 }

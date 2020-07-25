@@ -93,6 +93,7 @@ function init() {
 
 	/** @type {Track} */
 	var cursorTrack = host.createArrangerCursorTrack(2, 16);
+	var currentTrack = host.createCursorTrack(8, 16);
 	/** @type {Device} */
 	/** @type {CursorDevice} */
 	var cursorDevice = cursorTrack.createCursorDevice();
@@ -130,7 +131,7 @@ function init() {
 	trackBankContainer.clipView = clipView;
 	efxTrackBankContainer.clipView = clipView;
 
-	controls.sliderBank = new SliderModeHandler(trackBankContainer, efxTrackBankContainer, numTracks, cursorDevice, trackHandler);
+	controls.sliderBank = new SliderModeHandler(trackBankContainer, efxTrackBankContainer, numTracks, cursorDevice, trackHandler, currentTrack);
 
 	var mainKnobControl = new MainKnobKontrol(cursorTrack, transport.transport(), clip, cursorDevice);
 

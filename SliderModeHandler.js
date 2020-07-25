@@ -8,14 +8,14 @@
  * @param {Device} cursorDevice
  * @param {TrackHandler} trackHandler
  */
-function SliderModeHandler(mixerTrackBank, effectTrackBank, numTracks, cursorDevice, trackHandler) {
+function SliderModeHandler(mixerTrackBank, effectTrackBank, numTracks, cursorDevice, trackHandler, currentTrack) {
     var levelButton = controls.createButton(ENCODERBUTTON.LEVEL);
     var auxButton = controls.createButton(ENCODERBUTTON.AUX);
     var deviceButton = controls.createButton(ENCODERBUTTON.CONTROL);
     var macrcoButton = controls.createButton(ENCODERBUTTON.MACRO);
 
     var deviceControl = new DeviceSliderControl(cursorDevice, trackHandler);
-    var mixerControl = new MixerSliderControl("mixer",mixerTrackBank, host.createEffectTrackBank(8,8));
+    var mixerControl = new MixerSliderControl("mixer",mixerTrackBank, host.createEffectTrackBank(8,8), currentTrack);
     var efxControl = new MixerSliderControl("effect",effectTrackBank);
     var sliderView = new SliderView(numTracks);
     
@@ -208,7 +208,7 @@ function SliderModeHandler(mixerTrackBank, effectTrackBank, numTracks, cursorDev
         sliderView.assignSliderCallback(changeSendLevel);
         sliderView.setStripValues(BarModes.DOT, currentMode.getSendValue, currentMode.values());
         radioModes();
-        currentMode.showSendIndex();
+        //currentMode.showSendIndex();
    }
    
    function switchToMixerMode(newMode) {
@@ -254,7 +254,7 @@ function SliderModeHandler(mixerTrackBank, effectTrackBank, numTracks, cursorDev
         if(controlMode !== ControlModes.AUX) {
             setToAuxMode();
         } else {
-            currentMode.incrementSendIndex();
+            //currentMode.incrementSendIndex();
         }
     });
     
